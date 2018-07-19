@@ -188,7 +188,6 @@ export default Component.extend({
     },
 
     didReceiveAttrs() {
-        this._super(...arguments);
         let data = {};
         if (Array.isArray(this.get('group'))) {
             _.forEach(this.get('group'), g => {
@@ -214,10 +213,13 @@ export default Component.extend({
         }
         this.set('data', data);
 
-        scheduleOnce('afterRender', this, this.setupResize);
-
         if (this.get('chart')) {
             this.get('chart').redraw();
         }
+    },
+
+    init() {
+        this._super(...arguments);
+        scheduleOnce('afterRender', this, this.setupResize);
     }
 });

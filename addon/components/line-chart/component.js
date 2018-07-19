@@ -44,8 +44,7 @@ export default BaseChartComponent.extend({
             .x(d3.scaleTime().domain(this.get('xAxis').domain))
             .xUnits(() => this.get('group')[0].size() * (this.get('group').length + 1))
             .elasticY(true)
-            .yAxisPadding('20%')
-            .transitionDuration(0);
+            .yAxisPadding('20%');
 
         if (this.get('width')) {
             compositeChart.width(this.get('width'));

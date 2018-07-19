@@ -31,10 +31,9 @@ export default BaseChartComponent.extend({
         const labelWidth = Math.max(...(labels.map(el => el.length))) * 8;
         const tickWidth = 15;
         const legendWidth = this.get('legendWidth') || 250;
-        const rightMargin = this.get('showLegend') ? legendWidth : 5;
+        const rightMargin = this.get('showLegend') ? legendWidth : 50;
 
         rowChart
-            .transitionDuration(0)
             .elasticX(true)
             .group(this.get('group')[0])
             .dimension(this.get('dimension'))

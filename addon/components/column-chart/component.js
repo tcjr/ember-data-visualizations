@@ -34,7 +34,6 @@ export default BaseChartComponent.extend({
         const rightMargin = this.get('showLegend') ? legendWidth : 100;
 
         compositeChart
-            .transitionDuration(0)
             .renderTitle(false)
             .brushOn(false)
             .height(this.get('height'))
@@ -45,7 +44,10 @@ export default BaseChartComponent.extend({
                 left: 100
             })
             .x(d3.scaleTime().domain(this.get('xAxis').domain))
-            .xUnits(() => this.get('group')[0].size() * (this.get('group').length + 1))
+            .xUnits(() => {
+                const width = this.get('group')[0].size() * (this.get('group').length + 1);
+                return this.get('type') === 'LAYERED' || this.get('type') === 'STACKED' ? width / this.get('group').length : width;
+            })
             .dimension(this.get('dimension'))
             .elasticY(true)
             .yAxisPadding('40%');
@@ -96,11 +98,12 @@ export default BaseChartComponent.extend({
 
                 columnChart = dc.barChart(compositeChart);
 
+                const colorAccessor = this.get('series')[index].hatch ? `url(#diagonalHatch${index})` : this.get('colors')[index];
                 columnChart
                     .centerBar(true)
                     .barPadding(0.00)
                     .group(g)
-                    .colors(this.get('colors')[index])
+                    .colors(colorAccessor)
                     .renderTitle(false)
                     .elasticY(true);
 
@@ -123,7 +126,8 @@ export default BaseChartComponent.extend({
         }
 
         compositeChart
-            .on('pretransition', chart => this.onPretransition(chart, tip))
+            .on('pretransition', chart => this.doHatching(chart))
+            .on('renderlet', chart => this.onPretransition(chart, tip))
             .compose(columnCharts);
 
         this.set('chart', compositeChart);
@@ -168,53 +172,10 @@ export default BaseChartComponent.extend({
                     .append('rect')
                     .attr('width', 2)
                     .attr('height', 4)
-                    .attr('fill', this.get('colors')[index]);
-
-                chart.selectAll(`.sub._${this.getIndexForHatch(index)} rect.bar`)
-                    .attr('fill', `url(#diagonalHatch${index})`)
+                    .attr('fill', this.get('colors')[index])
                     .attr('opacity', '.7');
             }
         });
-
-        chart.selectAll('rect.bar')
-            .attr('rx', '2')
-            .attr('stroke', 'white');
-    },
-
-    handleBarWidth(chart) {
-        const gap = 2;
-        let bars = chart.selectAll('.sub._0 rect.bar')._groups[0];
-        const seriesCount = this.get('group').length;
-
-        if (bars[0]) {
-            let barWidth = (parseInt(d3.select(bars[0]).attr('width'), 10)) || 1;
-
-            // if composed, double barWidth
-            if (this.get('type') === 'LAYERED' || this.get('type') === 'STACKED') {
-                let x;
-                let barD3;
-                chart.selectAll('rect.bar')._groups[0].forEach(bar => {
-                    barD3 = d3.select(bar);
-                    x = parseInt(barD3.attr('x'), 10);
-                    barD3.attr('x', x - barWidth * (this.get('group').length - 1) / 2 + 1);
-                });
-
-                barWidth *= this.get('group').length; // number of series
-            }
-
-            let position = -1 * (barWidth + gap);
-
-            for (let i = 0; i < seriesCount; i++) {
-                if (this.get('type') === 'GROUPED') {
-                    chart.selectAll(`g.sub._${i}`)
-                        .attr('transform', `translate(${position},0)`);
-                }
-
-                position = position + (barWidth + gap);
-            }
-            chart.selectAll('rect.bar')
-                .attr('width', barWidth);
-        }
     },
 
     onPretransition(chart, tip) {
@@ -228,10 +189,7 @@ export default BaseChartComponent.extend({
             chart.selectAll('g.stack').selectAll('rect').attr('fill', (d) => colors[d.layer]);
         }
 
-        this.doHatching(chart);
-        this.handleBarWidth(chart);
-
-        let svg = chart.select('svg > defs');
+        let svg = chart.select('svg');
         let bars = chart.selectAll('.sub._0 rect.bar')._groups[0];
 
         this.addClickHandlersAndTooltips(svg, tip, 'rect.bar');

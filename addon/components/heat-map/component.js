@@ -59,6 +59,9 @@ export default BaseChartComponent.extend({
             .colsLabel(d => this.get('keyFormat')(d))
             .transitionDuration(0);
 
+
+            console.log(colorMap);
+
         if (this.get('width')) {
             heatMap.width(this.get('width'));
         }
