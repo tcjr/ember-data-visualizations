@@ -5,7 +5,7 @@
   "keywords": [
     "ember-addon"
   ],
-  "repository": "https://github.com/purecloudlabs/ember-data-visualizations",
+  "repository": "https://github.com/tcjr/ember-data-visualizations",
   "license": "MIT",
   "author": "Genesys",
   "directories": {
