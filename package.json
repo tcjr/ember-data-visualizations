@@ -12,9 +12,6 @@
     "doc": "doc",
     "test": "tests"
   },
-  "pre-push": [
-    "test"
-  ],
   "scripts": {
     "build": "ember build",
     "lint:js": "eslint ./*.js addon addon-test-support app blueprints config lib server test-support tests",
