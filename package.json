@@ -58,8 +58,7 @@
     "eslint-plugin-ember": "^5.0.0",
     "eslint-plugin-ember-suave": "^1.0.0",
     "eslint-plugin-node": "^6.0.1",
-    "loader.js": "^4.2.3",
-    "pre-push": "^0.1.1"
+    "loader.js": "^4.2.3"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
