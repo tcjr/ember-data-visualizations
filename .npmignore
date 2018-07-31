@@ -11,3 +11,4 @@
 .travis.yml
 ember-cli-build.js
 testem.js
+/config/addon-docs.js
